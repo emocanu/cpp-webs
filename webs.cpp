@@ -1,24 +1,52 @@
 // webs.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
+#define SECURITY_WIN32
 
 #include <iostream>
 #include <string>
 #include "curl/curl.h"
+#include "schannel.h"
+#include "Sspi.h"
 
-// prevent dumping th ehtml to the console, sink it
+// TODO move these in class/functions
+CURL* curl = nullptr;
+std::wstring cipher(L"");
+
+// prevent dumping the html to the console, sink it
 static size_t cb(void* data, size_t size, size_t nmemb, void* userp)
 {
-    size_t realsize = size * nmemb;
-    return realsize;
+    if (cipher.length() == 0) // do this only once
+    {
+        const struct curl_tlssessioninfo* info = NULL;
+        CURLcode res = curl_easy_getinfo(curl, CURLINFO_TLS_SSL_PTR, &info);
+        if (res == CURLE_OK)
+        {
+            if (info->backend == CURLSSLBACKEND_SCHANNEL)
+            {
+                SecPkgContext_CipherInfo cipherInfo;
+                SecHandle* handle = (SecHandle*)(info->internals);
+                if (handle != nullptr)
+                {
+                    SECURITY_STATUS status = QueryContextAttributes(handle, SECPKG_ATTR_CIPHER_INFO, (PVOID)&cipherInfo);
+                    if (status == SEC_E_OK)
+                    {
+                        cipher = cipherInfo.szCipherSuite;
+                    }
+                }
+            }
+        }
+    }
+
+    return size * nmemb;
 }
 
 int main()
 {
     std::string text;
 	curl_global_init(CURL_GLOBAL_DEFAULT);
-	CURL* curl = curl_easy_init();
+	curl = curl_easy_init();
 
-    curl_easy_setopt(curl, CURLOPT_URL, "https://www.example.com");
+    curl_easy_setopt(curl, CURLOPT_URL, "https://www.google.com");
     curl_easy_setopt(curl, CURLOPT_CERTINFO, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cb);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &text);
@@ -30,7 +58,6 @@ int main()
     {
         struct curl_certinfo* ci;
         res = curl_easy_getinfo(curl, CURLINFO_CERTINFO, &ci);
-
         if (res == CURLE_OK)
         {
             if (ci->num_of_certs > 0)
@@ -61,6 +88,9 @@ int main()
                 std::cout << "Certificate issuer:\t" << issuer << std::endl;
             }
         }
+
+        std::wcout << L"Cipher used:\t" << (cipher.length() == 0 ? L"Unknown" : cipher.c_str()) << std::endl;
+
     }
 
 	curl_easy_cleanup(curl);
