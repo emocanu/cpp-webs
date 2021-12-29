@@ -1,11 +1,5 @@
 #pragma once
-#define SECURITY_WIN32
-
-#include <iostream>
-#include <string>
-#include "curl/curl.h"
-#include "schannel.h"
-#include "Sspi.h"
+#include "curl_low_level.h"
 
 namespace Curl
 {
@@ -17,7 +11,6 @@ namespace Curl
         std::string issuer = "";
         std::string subject = "";
 
-        //size_t __cdecl write_callback(void* data, size_t size, size_t nmemb, void* userp);
         void GetCertificateInfo();
     public:
         CurlWrapper();

@@ -21,9 +21,15 @@
     <ClCompile Include="CurlWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="curl_low_level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CurlWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="curl_low_level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

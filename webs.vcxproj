@@ -141,10 +141,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CurlWrapper.cpp" />
+    <ClCompile Include="curl_low_level.cpp" />
     <ClCompile Include="webs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CurlWrapper.h" />
+    <ClInclude Include="curl_low_level.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
