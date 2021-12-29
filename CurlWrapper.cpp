@@ -65,4 +65,25 @@ namespace Curl
         std::wcout << L"Cipher used:\t" << (cipher.length() == 0 ? L"Unknown" : cipher.c_str()) << std::endl << std::endl;
         std::cout << "Page content:" << std::endl << std::endl << content;
     }
+
+    void CurlWrapper::DisplayPageOverIpv6(const std::string& url)
+    {
+        std::cout << std::endl << "Displays page over IP v6 " << url << std::endl;
+
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        Curl_C::curl_c = curl;
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, Curl_C::write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &content);
+
+        CURLcode res = curl_easy_perform(curl);
+
+        if (res == CURLE_COULDNT_RESOLVE_HOST)
+        {
+            std::cout << "Could not resolve host!" << std::endl;
+        }
+        else
+        {
+            std::cout << "Page content:" << std::endl << std::endl << content;
+        }
+    }
 }

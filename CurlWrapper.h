@@ -17,5 +17,6 @@ namespace Curl
         ~CurlWrapper();
 
         void DisplaySecurePage(const std::string& url);
+        void DisplayPageOverIpv6(const std::string& url);
     };
 }
